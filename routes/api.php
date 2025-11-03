@@ -13,6 +13,7 @@ Route::middleware('auth:sanctum')->group(function ()
     // post route
     Route::get('/post', [PostController::class, 'index']);
     Route::post('/post',[PostController::class, 'store']);
+    Route::get('/post/{id}',[PostController::class, 'destroy']);
 
 
     // Route::resource('users', UserController::class, ['only' => ['index', 'store', 'update', 'show']]);

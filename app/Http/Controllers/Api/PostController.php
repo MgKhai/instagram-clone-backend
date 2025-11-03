@@ -45,7 +45,7 @@ class PostController extends Controller
 
         // check auth user
         if( $request->userId != Auth::user()->id ){
-            return $this->errorResponse('New post creation fails', 500);
+            return $this->errorResponse('New post creation fails', 404);
         }
 
         // save image in public folder
@@ -73,6 +73,34 @@ class PostController extends Controller
             // error response
             return $this->errorResponse('New post creation fails: ' . $error->getMessage(), 500);
         }
+    }
+
+    /**
+     * destroy a post
+     */
+    public function destroy($id){
+        try{
+            $postData = Post::with('media')->findOrFail($id);
+
+            if($postData->user_id != Auth::user()->id){
+                return $this->errorResponse('Fail to delete post', 404);
+            }
+
+            $imageName = $postData->media[0]->url;
+            if( file_exists(public_path('/postImage/'.$imageName))){
+                unlink(public_path('/postImage/'.$imageName));
+            }
+
+            // delete post
+            $postData->delete();
+
+            // success response
+            return $this->successResponse('Post deleted successfully');
+        }catch(\Exception $error){
+            // error response
+            return $this->errorResponse('Fail to delete post ' . $error->getMessage(), 500);
+        }
+
     }
 
 }
