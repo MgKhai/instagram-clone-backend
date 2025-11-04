@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\Auth\AuthController;
 
@@ -14,6 +15,9 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::get('/post', [PostController::class, 'index']);
     Route::post('/post',[PostController::class, 'store']);
     Route::get('/post/{id}',[PostController::class, 'destroy']);
+
+    // like route
+    Route::post('/post/like',[LikeController::class,'togglelike']);
 
 
     // Route::resource('users', UserController::class, ['only' => ['index', 'store', 'update', 'show']]);
