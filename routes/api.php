@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function ()
 
     // follower route
     Route::post('/follow',[FollowerController::class,'toggleFollow']);
+    Route::get('/followers/{id}',[FollowerController::class,'followers']);
+    Route::get('/following/{id}',[FollowerController::class,'following']);
 
 
     // Route::resource('users', UserController::class, ['only' => ['index', 'store', 'update', 'show']]);

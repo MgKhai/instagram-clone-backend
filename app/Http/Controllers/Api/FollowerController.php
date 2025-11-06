@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Models\Follower;
 use Illuminate\Http\Request;
 use App\Http\Helpers\ApiResponse;
@@ -54,5 +55,48 @@ class FollowerController extends Controller
             //error
             return $this->errorResponse('Fail to follow: '. $error->getMessage(), 500);
         }
+
     }
+
+    /**
+     * retrieve followers list
+     */
+    public function followers($id){
+        try{
+            $user = User::findOrFail($id);
+            if(!$user){
+                return $this->errorResponse('User not found', 404);
+            }
+
+            $followers = $user->followers()->with('follower')->get();
+            // success
+            return $this->successResponse('Followers list retrieved successfully', FollowResource::collection($followers), 200);
+        }catch(\Exception $error){
+
+            //error
+            return $this->errorResponse('Retrieving followers list fails: '. $error->getMessage(), 500);
+        }
+    }
+
+    /**
+     * retrieve following list
+     */
+    public function following($id){
+        try{
+            $user = User::findOrFail($id);
+            if(!$user){
+                return $this->errorResponse('User not found', 404);
+            }
+
+            $followings = $user->following()->with('following')->get();
+            // success
+            return $this->successResponse('Following list retrieved successfully', FollowResource::collection($followings), 200);
+        }catch(\Exception $error){
+
+            //error
+            return $this->errorResponse('Retrieving followings list fail: '. $error->getMessage(), 500);
+        }
+    }
+
+
 }
