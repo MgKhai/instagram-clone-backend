@@ -17,13 +17,13 @@ class LikeController extends Controller
     /**
      * like or unlike
      */
-    public function togglelike(Request $request){
+    public function toggleLike(Request $request){
         try{
             $post = Post::findOrFail($request->postId);
             $likedUserId = $request->userId;
 
             if($likedUserId != Auth::user()->id){
-                return $this->errorResponse('Fail to like post', 404);
+                return $this->errorResponse('Fail to like post', 400);
             }
 
             $existingLike = Like::where('user_id', $likedUserId)->where('post_id', $post->id)->first();

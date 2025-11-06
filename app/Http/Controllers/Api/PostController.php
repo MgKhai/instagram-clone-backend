@@ -45,7 +45,7 @@ class PostController extends Controller
 
         // check auth user
         if( $request->userId != Auth::user()->id ){
-            return $this->errorResponse('New post creation fails', 404);
+            return $this->errorResponse('New post creation fails', 400);
         }
 
         // save image in public folder
@@ -83,7 +83,7 @@ class PostController extends Controller
             $postData = Post::with('media')->findOrFail($id);
 
             if($postData->user_id != Auth::user()->id){
-                return $this->errorResponse('Fail to delete post', 404);
+                return $this->errorResponse('Fail to delete post', 400);
             }
 
             $imageName = $postData->media[0]->url;
