@@ -9,6 +9,8 @@ use App\Http\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Api\FollowResource;
+use App\Http\Resources\Api\FollowerListResource;
+use App\Http\Resources\Api\FollowingListResource;
 
 class FollowerController extends Controller
 {
@@ -59,18 +61,18 @@ class FollowerController extends Controller
     }
 
     /**
-     * retrieve followers list
+     * retrieve follower list
      */
     public function followers($id){
         try{
-            $user = User::findOrFail($id);
-            if(!$user){
-                return $this->errorResponse('User not found', 404);
+            $followers = Follower::where('following_id',$id)->with('follower')->get();
+
+            if(!$followers){
+                return $this->errorResponse('Followers not found', 404);
             }
 
-            $followers = $user->followers()->with('follower')->get();
             // success
-            return $this->successResponse('Followers list retrieved successfully', FollowResource::collection($followers), 200);
+            return $this->successResponse('Followers list retrieved successfully', FollowerListResource::collection($followers), 200);
         }catch(\Exception $error){
 
             //error
@@ -79,18 +81,18 @@ class FollowerController extends Controller
     }
 
     /**
-     * retrieve following list
+     * retrieve follower list
      */
     public function following($id){
         try{
-            $user = User::findOrFail($id);
-            if(!$user){
-                return $this->errorResponse('User not found', 404);
+            $followings = Follower::where('follower_id', $id)->with('following')->get();
+
+            if(!$followings){
+                return $this->errorResponse('Followings not found', 404);
             }
 
-            $followings = $user->following()->with('following')->get();
             // success
-            return $this->successResponse('Following list retrieved successfully', FollowResource::collection($followings), 200);
+            return $this->successResponse('Following list retrieved successfully', FollowingListResource::collection($followings), 200);
         }catch(\Exception $error){
 
             //error
