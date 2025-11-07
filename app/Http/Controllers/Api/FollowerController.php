@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Api\FollowResource;
 use App\Http\Resources\Api\FollowerListResource;
 use App\Http\Resources\Api\FollowingListResource;
+use App\Http\Resources\Api\MutualFollowerResource;
 
 class FollowerController extends Controller
 {
@@ -98,6 +99,50 @@ class FollowerController extends Controller
             //error
             return $this->errorResponse('Retrieving followings list fail: '. $error->getMessage(), 500);
         }
+    }
+
+    /**
+     * retrieve mutual followers list
+     */
+    public function mutualFollowers($id)
+    {
+        try{
+
+            if($id == Auth::user()->id){
+                return $this->errorResponse('Fail request', 400);
+            }
+
+            if (!User::where('id', $id)->exists()) {
+                return $this->errorResponse('Users not found', 404);
+            }
+
+            $authId = Auth::user()->id;
+            $profileUserId = $id;
+
+
+            $authUserFollowings = Follower::where('follower_id', $authId)
+                ->pluck('following_id');
+
+            $profileFollowers = Follower::where('following_id', $profileUserId)
+                ->pluck('follower_id');
+
+            $mutualIds = $authUserFollowings->intersect($profileFollowers);
+
+            $mutualUsers = User::whereIn('id', $mutualIds)->get();
+
+            if($mutualIds->isempty()){
+                return $this->errorResponse('Mutual followers not found', 404);
+            }
+
+            return $this->successResponse('Mutual followers list retrieved successfully', [
+                'mutual_followers' => MutualFollowerResource::collection($mutualUsers),
+                'mutual_count'     => $mutualUsers->count(),
+            ], 200);
+        }catch(\Exception $error){
+            //error
+            return $this->errorResponse('Retrieving mutual followers list fail: '. $error->getMessage(), 500);
+        }
+
     }
 
 
