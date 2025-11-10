@@ -57,4 +57,26 @@ class CommentController extends Controller
             return $this->errorResponse('Retrieving comments list fails: '.$error->getMessage(), 500);
         }
     }
+
+    /**
+     * destroy a comment
+     */
+    public function destroy($id){
+        try{
+            $comment = Comment::findOrFail($id);
+
+            if($comment->user_id != Auth::user()->id){
+                return $this->errorResponse('Fail to delete', 400);
+            }
+
+            $comment->delete();
+
+            //success response
+            return $this->successResponse('Comment deleted successfully');
+
+        }catch(\Exception $error){
+            // error response
+            return $this->errorResponse('Fail to delete: '.$error->getMessage(), 500);
+        }
+    }
 }
