@@ -36,4 +36,25 @@ class CommentController extends Controller
             return $this->errorResponse('Fail to comment: '. $error->getMessage(), 500);
         }
     }
+
+    /**
+     * retrieve comment list
+     */
+    public function index($id){
+        try{
+            $comments = Comment::where('post_id',$id)->get();
+
+            if($comments->isEmpty()){
+                return $this->errorResponse('Comments not found', 404);
+            }
+
+            // success response
+            return $this->successResponse('Comments retrieved successfully', CommentResource::collection($comments), 200);
+
+
+        }catch(\Exception $error){
+            // error response
+            return $this->errorResponse('Retrieving comments list fails: '.$error->getMessage(), 500);
+        }
+    }
 }
